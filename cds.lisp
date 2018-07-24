@@ -32,3 +32,13 @@
 (defun load-db (filename)
   (with-open-file (in filename)
     (with-standard-io-syntax (setf *db* (read in)))))
+
+(defun where (&key title artist rating (ripped nil ripped-p))
+  #'(lambda (cd)
+      (and
+       (if title (equal title (getf cd :title)) t)
+       (if artist (equal artist (getf cd :artist)) t)
+       (if rating (equal rating (getf cd :rating)) t)
+       (if ripped-p (equal ripped (getf cd :ripped)) t))))
+
+(defun select (selector-fn) (remove-if-not selector-fn *db*))
