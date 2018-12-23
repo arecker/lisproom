@@ -1,6 +1,57 @@
 #+TITLE: Cookbook
 #+STARTUP: showall
 
+* Data
+
+* Hash Tables
+
+Use =make-hash-table= to create a hash table.
+
+#+BEGIN_SRC lisp
+(defparameter *my-hash* (make-hash-table))
+#+END_SRC
+
+#+RESULTS:
+: *MY-HASH*
+
+Use =gethash= to access values by key.
+
+#+BEGIN_SRC lisp
+  (gethash 'my-key *my-hash*)
+#+END_SRC
+
+Use =setf= to create entries.
+
+#+BEGIN_SRC lisp
+  (setf (gethash 'my-key *my-hash*) "my value")
+#+END_SRC
+
+#+RESULTS:
+: my value
+
+The function =gethash= returns the value as well as a boolean that
+expresses if the key was present.  Use =multiple-value-bind= to use
+both.
+
+#+BEGIN_SRC lisp :results output
+  (setf (gethash 'my-nil-value *my-hash*) nil)
+
+  (defun verbose-gethash (key hash)
+    (multiple-value-bind (val exists-p)
+	(gethash key hash)
+      (if exists-p
+	  (format t "The key ~a exists in ~a~%" key hash)
+	  (format t "The key ~a does not exist in ~a~%" key hash))
+      val))
+
+  (verbose-gethash 'my-nil-value *my-hash*)
+  (verbose-gethash 'my-nonexistent-value *my-hash*)
+#+END_SRC
+
+#+RESULTS:
+: The key MY-NIL-VALUE exists in #<HASH-TABLE :TEST EQL :COUNT 2 {52836669}>
+: The key MY-NONEXISTENT-VALUE does not exist in #<HASH-TABLE :TEST EQL :COUNT 2 {52836669}>
+
 * File
 
 ** Read File
