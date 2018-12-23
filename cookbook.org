@@ -3,7 +3,7 @@
 
 * Data
 
-* Hash Tables
+** Hash Tables
 
 Use =make-hash-table= to create a hash table.
 
@@ -51,6 +51,116 @@ both.
 #+RESULTS:
 : The key MY-NIL-VALUE exists in #<HASH-TABLE :TEST EQL :COUNT 2 {52836669}>
 : The key MY-NONEXISTENT-VALUE does not exist in #<HASH-TABLE :TEST EQL :COUNT 2 {52836669}>
+
+** Association Lists
+
+Association lists, or /alists/ are lists of cons cells.
+
+#+BEGIN_SRC lisp
+  (defparameter *my-alist* '((a . 1)
+			     (b . 2)
+			     (c . 3)))
+#+END_SRC
+
+Cons pairs can be retrieves from an alist using the =assoc= function.
+
+#+BEGIN_SRC lisp
+  (assoc 'a *my-alist*)
+#+END_SRC
+
+#+RESULTS:
+: (A . 1)
+
+If you just want the value of the cons cell, you can use =cdr= on the
+result.
+
+#+BEGIN_SRC lisp
+  (cdr (assoc 'a *my-alist*))
+#+END_SRC
+
+#+RESULTS:
+: 1
+
+The =assoc= function scans the list from front to back, so /shadowing/
+can occur on duplicate keys.  Be careful out there.
+
+#+BEGIN_SRC lisp
+  (cdr (assoc 'a '((a . "the first value")
+		   (a . "the second value"))))
+#+END_SRC
+
+#+RESULTS:
+: the first value
+
+You can add a new element to the front of a list by consing a new cons
+cell to the front, or by using the =acons= function.
+
+#+BEGIN_SRC lisp
+  (setf *my-alist* (cons '(z . 26) *my-alist*))
+#+END_SRC
+
+#+RESULTS:
+: ((Z . 26) (A . 1) (B . 2) (C . 3))
+
+#+BEGIN_SRC lisp
+  (setf *my-alist* (acons 'x 24 *my-alist*))
+#+END_SRC
+
+#+RESULTS:
+: ((X . 24) (Y . 25) (Z . 26) (A . 1) (B . 2) (C . 3))
+
+You can also use =push=.
+
+#+BEGIN_SRC lisp
+  (push '(y . 25) *my-alist*)
+#+END_SRC
+
+#+RESULTS:
+: ((Y . 25) (Z . 26) (A . 1) (B . 2) (C . 3))
+
+Zip up a list of keys and values with =pairlis=.  Ordering is not
+guaranteed.
+
+#+BEGIN_SRC lisp
+  (pairlis '(a b c d e f g) '(1 2 3 4 5 6 7))
+#+END_SRC
+
+#+RESULTS:
+: ((G . 7) (F . 6) (E . 5) (D . 4) (C . 3) (B . 2) (A . 1))
+
+** Property Lists
+
+Property lists, or /plists/, are lists in the keys and values
+alternate.  You should only use symbols for keys.
+
+#+BEGIN_SRC lisp
+  (defparameter *my-plist* '(:name "Alex" :age 28 :language "English"))
+#+END_SRC
+
+Elements can be accessed with =getf=.
+
+#+BEGIN_SRC lisp :results output
+  (defun show-info (plist)
+    (format t "Name is ~a.  Age is ~d.  Language: ~a~%"
+	    (getf plist :name)
+	    (getf plist :age)
+	    (getf plist :language)))
+
+  (show-info *my-plist*)
+#+END_SRC
+
+#+RESULTS:
+: Name is Alex.  Age is 28.  Language: English
+
+Elements can be set with =setf=.
+
+#+BEGIN_SRC lisp :results output
+  (setf (getf *my-plist* :language) "LISP")
+  (show-info *my-plist*)
+#+END_SRC
+
+#+RESULTS:
+: Name is Alex.  Age is 28.  Language: LISP
 
 * File
 
